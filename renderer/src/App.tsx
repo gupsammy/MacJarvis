@@ -1,8 +1,22 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
-import { Altair } from "./components/altair/Altair";
+// Import Altair dynamically
+// import { Altair } from "./components/altair/Altair";
+// Adjust lazy import for named export
+const Altair = lazy(() =>
+  import("./components/altair/Altair").then((module) => ({
+    default: module.Altair,
+  }))
+);
 import ControlTray from "./components/control-tray/ControlTray";
 import cn from "classnames";
 
@@ -27,14 +41,21 @@ function App() {
     const fetchApiKey = async () => {
       setIsLoadingKey(true);
       try {
-        const key = await window.electronAPI.getApiKey();
-        if (key) {
-          setApiKey(key);
-          setShowApiKeyPrompt(false);
+        // Check if electronAPI exists before calling
+        if (window.electronAPI) {
+          const key = await window.electronAPI.getApiKey();
+          if (key) {
+            setApiKey(key);
+            setShowApiKeyPrompt(false);
+          } else {
+            // Key is null or empty
+            setApiKey(null);
+            setShowApiKeyPrompt(true);
+          }
         } else {
-          // Key is null (likely packaged app without stored key)
-          setApiKey(null);
-          setShowApiKeyPrompt(true);
+          // Handle case where preload script didn't load/expose API
+          console.error("Electron API not available.");
+          setShowApiKeyPrompt(true); // Show prompt or error message
         }
       } catch (error) {
         console.error("Error fetching API key:", error);
@@ -53,14 +74,20 @@ function App() {
     if (enteredKey) {
       setIsLoadingKey(true);
       try {
-        const success = await window.electronAPI.setApiKey(enteredKey);
-        if (success) {
-          setApiKey(enteredKey);
-          setShowApiKeyPrompt(false);
+        // Check if electronAPI exists before calling
+        if (window.electronAPI) {
+          const success = await window.electronAPI.setApiKey(enteredKey);
+          if (success) {
+            setApiKey(enteredKey);
+            setShowApiKeyPrompt(false);
+          } else {
+            // Handle case where setting key failed
+            console.warn("Setting API key via electronAPI failed.");
+            // Optionally show an error message
+          }
         } else {
-          // Handle case where setting key failed (e.g., in dev mode)
-          console.warn("Setting API key via prompt failed or was ignored.");
-          // Optionally show an error message to the user
+          console.error("Electron API not available for setting key.");
+          // Optionally show an error message
         }
       } catch (error) {
         console.error("Error setting API key:", error);
@@ -122,7 +149,10 @@ function App() {
           <main>
             <div className="main-app-area">
               {/* APP goes here */}
-              <Altair />
+              {/* Wrap lazy loaded component in Suspense */}
+              <Suspense fallback={<div>Loading chart...</div>}>
+                <Altair />
+              </Suspense>
               <video
                 className={cn("stream", {
                   hidden: !videoRef.current || !videoStream,

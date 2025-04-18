@@ -4,8 +4,8 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "classnames": "^2.5.1",
-    "dotenv-flow": "^4.1.0",
     "eventemitter3": "^5.0.1",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
@@ -14,9 +14,9 @@
     "react-select": "^5.8.3",
     "react-syntax-highlighter": "^15.6.1",
     "sass": "^1.80.6",
-    "vega": "^5.30.0",
+    "vega": "^6.1.2",
     "vega-embed": "^6.29.0",
-    "vega-lite": "^5.22.0",
+    "vega-lite": "^6.1.0",
     "web-vitals": "^2.1.4",
     "zustand": "^5.0.1"
   },
@@ -25,20 +25,13 @@
     "build": "tsc && vite build"
   },
   "devDependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/lodash": "^4.17.13",
     "@types/node": "^16.18.119",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.3.1",
-    "ajv": "^8.17.1",
-    "ajv-keywords": "^5.1.0",
-    "ts-node": "^10.9.2",
+    "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.2"
   }

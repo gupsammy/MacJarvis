@@ -20,7 +20,12 @@ import { Part } from "@google/generative-ai";
 import cn from "classnames";
 import { ReactNode } from "react";
 import { useLoggerStore } from "../../lib/store-logger";
-import SyntaxHighlighter from "react-syntax-highlighter";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import json from "react-syntax-highlighter/dist/esm/languages/hljs/json";
+import python from "react-syntax-highlighter/dist/esm/languages/hljs/python";
+import shell from "react-syntax-highlighter/dist/esm/languages/hljs/shell";
+import javascript from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
+import typescript from "react-syntax-highlighter/dist/esm/languages/hljs/typescript";
 import { vs2015 as dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import {
   ClientContentMessage,
@@ -39,6 +44,15 @@ import {
   ToolCallMessage,
   ToolResponseMessage,
 } from "../../multimodal-live-types";
+
+SyntaxHighlighter.registerLanguage("json", json);
+SyntaxHighlighter.registerLanguage("python", python);
+SyntaxHighlighter.registerLanguage("shell", shell);
+SyntaxHighlighter.registerLanguage("bash", shell);
+SyntaxHighlighter.registerLanguage("javascript", javascript);
+SyntaxHighlighter.registerLanguage("js", javascript);
+SyntaxHighlighter.registerLanguage("typescript", typescript);
+SyntaxHighlighter.registerLanguage("ts", typescript);
 
 const formatTime = (d: Date) => d.toLocaleTimeString().slice(0, -3);
 
@@ -60,7 +74,7 @@ const LogEntry = ({
       {
         receive: log.type.includes("receive"),
         send: log.type.includes("send"),
-      },
+      }
     )}
   >
     <span className="timestamp">{formatTime(log.date)}</span>
@@ -165,7 +179,7 @@ const ToolCallCancellationLog = ({ message }: Message): JSX.Element => (
           <span className="inline-code" key={`cancel-${id}`}>
             "{id}"
           </span>
-        ),
+        )
       )}
     </span>
   </div>
@@ -181,7 +195,7 @@ const ToolResponseLog = ({ message }: Message): JSX.Element => (
             {JSON.stringify(fc.response, null, "  ")}
           </SyntaxHighlighter>
         </div>
-      ),
+      )
     )}
   </div>
 );
@@ -203,9 +217,8 @@ const ModelTurnLog = ({ message }: Message): JSX.Element => {
   );
 };
 
-const CustomPlainTextLog = (msg: string) => () => (
-  <PlainTextMessage message={msg} />
-);
+const CustomPlainTextLog = (msg: string) => () =>
+  <PlainTextMessage message={msg} />;
 
 export type LoggerFilterType = "conversations" | "tools" | "none";
 
