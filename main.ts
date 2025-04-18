@@ -64,7 +64,6 @@ function createWindow(): void {
     // When packaged, __dirname points to /Resources/app.asar/dist
     // We need to go up one level from 'dist' and then into 'renderer/dist'
     const htmlPath = path.join(__dirname, "..", "renderer/dist", "index.html");
-    console.log("Loading HTML from:", htmlPath);
     win.loadFile(htmlPath);
     // TEMPORARY: Open DevTools in packaged app for debugging
     // win.webContents.openDevTools({ mode: "detach" }); // Keep dev tools off in prod for now
@@ -91,52 +90,25 @@ app.whenReady().then(async () => {
   // 1. Create the hidden window FIRST
   createWindow();
 
-  // 2. Tray icon - try multiple possible locations for the icon
-  let iconPath: string = "";
-  const possibleIconPaths = [
-    path.join(process.resourcesPath, "assets", "trayTemplate.png"),
-    path.join(__dirname, "..", "assets", "trayTemplate.png"),
-    path.join(__dirname, "../..", "assets", "trayTemplate.png"),
-    path.join(__dirname, "../../assets", "trayTemplate.png"),
-    path.join(app.getAppPath(), "assets", "trayTemplate.png"),
-  ];
-
+  // 2. Determine tray icon path
+  let iconPath: string;
   if (app.isPackaged) {
-    // Try all possible paths in production
-    for (const testPath of possibleIconPaths) {
-      console.log("Testing icon path:", testPath);
-      if (existsSync(testPath)) {
-        iconPath = testPath;
-        console.log("Found icon at:", iconPath);
-        break;
-      }
-    }
-    // Fallback if not found
-    if (!iconPath) {
-      console.error(
-        "Could not find tray icon in any location. Using first path anyway."
-      );
-      iconPath = possibleIconPaths[0];
-    }
+    // In production, the icon is copied to the resources path by electron-builder (extraResources)
+    iconPath = path.join(process.resourcesPath, "assets", "trayTemplate.png");
   } else {
-    // In development, use the standard path
+    // In development, __dirname is dist/, so go up one level and into assets/
     iconPath = path.join(__dirname, "..", "assets", "trayTemplate.png");
   }
-
-  console.log("App is packaged:", app.isPackaged);
-  console.log("Final icon path:", iconPath);
-  console.log("Resources path:", process.resourcesPath);
-  console.log("__dirname:", __dirname);
-  console.log("App path:", app.getAppPath());
 
   const icon = nativeImage.createFromPath(iconPath);
 
   if (icon.isEmpty()) {
     console.error("Failed to load tray icon from:", iconPath);
+    // Optionally, you might want to quit or use a default icon here
   }
 
   tray = new Tray(icon);
-  tray.setToolTip("Gemini Tray");
+  tray.setToolTip("MacJarvis");
 
   tray.on("click", () => {
     if (!win) {
@@ -187,19 +159,16 @@ function setupIpcHandlers() {
       // In development, prioritize .env file, fallback to store
       const envKey = process.env.GEMINI_API_KEY;
       if (envKey) {
-        console.log("Using API Key from .env");
         return envKey;
       }
       // If no .env key, check if user saved one via UI during dev
       const storedKey = store.get("geminiApiKey", null);
       if (storedKey) {
-        console.log("Using API Key from store (dev mode)");
         return storedKey;
       }
       return null; // No key found in dev
     } else {
       // In production, only get the key from store
-      console.log("Using API Key from store (prod mode)");
       return store.get("geminiApiKey", null);
     }
   });
@@ -213,7 +182,6 @@ function setupIpcHandlers() {
     }
     try {
       store.set("geminiApiKey", key);
-      console.log("API Key saved to store.");
       return true; // Indicate success
     } catch (error) {
       console.error("Failed to save API Key to store:", error);
