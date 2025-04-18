@@ -4,8 +4,11 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "dev": "concurrently -k -n \"REACT,ELECTRON\" -c \"cyan,blue\" \"cross-env PORT=3200 BROWSER=none npm --prefix renderer start\" \"wait-on tcp:3200 && tsc -p tsconfig.json --watch\" \"wait-on dist/main.js && electron dist/main.js\"",
+    "clean": "rm -rf dist renderer/dist",
+    "dev-renderer": "npm --prefix renderer run dev",
+    "dev-main-watch": "tsc -p tsconfig.json --watch",
+    "dev-main-start": "wait-on dist/main.js && electron dist/main.js",
+    "dev": "concurrently -k -n \"VITE,MAIN_TSC,ELECTRON\" -c \"cyan,magenta,blue\" \"npm:dev-renderer\" \"npm:dev-main-watch\" \"wait-on http://localhost:5173 && npm run dev-main-start\"",
     "build-main": "tsc -p tsconfig.json",
     "build-renderer": "npm --prefix renderer run build",
     "build": "npm run clean && npm run build-main && npm run build-renderer && electron-builder"
@@ -38,7 +41,7 @@
     },
     "files": [
       "dist/**/*",
-      "renderer/build/**/*"
+      "renderer/dist/**/*"
     ],
     "extraResources": [
       {

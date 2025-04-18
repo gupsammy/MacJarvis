@@ -62,14 +62,14 @@ function createWindow(): void {
 
   if (app.isPackaged) {
     // When packaged, __dirname points to /Resources/app.asar/dist
-    // We need to go up one level from 'dist' and then into 'renderer/build'
-    const htmlPath = path.join(__dirname, "..", "renderer/build", "index.html");
+    // We need to go up one level from 'dist' and then into 'renderer/dist'
+    const htmlPath = path.join(__dirname, "..", "renderer/dist", "index.html");
     console.log("Loading HTML from:", htmlPath);
     win.loadFile(htmlPath);
     // TEMPORARY: Open DevTools in packaged app for debugging
-    win.webContents.openDevTools({ mode: "detach" });
+    // win.webContents.openDevTools({ mode: "detach" }); // Keep dev tools off in prod for now
   } else {
-    win.loadURL("http://localhost:3200");
+    win.loadURL("http://localhost:5173");
     // Open DevTools automatically in development
     win.webContents.openDevTools({ mode: "detach" });
   }
