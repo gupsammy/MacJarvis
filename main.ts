@@ -11,7 +11,7 @@ import path from "node:path";
 import { existsSync } from "fs";
 // electron-store is ESM, need to use dynamic import
 // const Store = require("electron-store"); // Remove require
-import type Store from "electron-store"; // Import type for Store
+import type Store from "electron-store" with { "resolution-mode": "import" }; // Import type for Store
 import dotenv from "dotenv";
 
 // Define the expected schema for the store
@@ -183,30 +183,41 @@ function setupIpcHandlers() {
       console.error("Store not initialized when getting API key");
       return null;
     }
-    if (app.isPackaged) {
-      // In production, get the key from store
-      return store.get("geminiApiKey", null); // Provide default value
+    if (!app.isPackaged) {
+      // In development, prioritize .env file, fallback to store
+      const envKey = process.env.GEMINI_API_KEY;
+      if (envKey) {
+        console.log("Using API Key from .env");
+        return envKey;
+      }
+      // If no .env key, check if user saved one via UI during dev
+      const storedKey = store.get("geminiApiKey", null);
+      if (storedKey) {
+        console.log("Using API Key from store (dev mode)");
+        return storedKey;
+      }
+      return null; // No key found in dev
     } else {
-      // In development, get the key from environment variable
-      return process.env.REACT_APP_GEMINI_API_KEY || null;
+      // In production, only get the key from store
+      console.log("Using API Key from store (prod mode)");
+      return store.get("geminiApiKey", null);
     }
   });
 
-  // IPC handler for setting the API key (only used in packaged mode)
+  // IPC handler for setting the API key (works in dev and prod)
   ipcMain.handle("set-api-key", async (event, key: string) => {
     // Ensure store is available when handler is invoked
     if (!store) {
       console.error("Store not initialized when setting API key");
       return false;
     }
-    if (app.isPackaged) {
+    try {
       store.set("geminiApiKey", key);
+      console.log("API Key saved to store.");
       return true; // Indicate success
+    } catch (error) {
+      console.error("Failed to save API Key to store:", error);
+      return false; // Indicate failure
     }
-    // In development, setting via IPC is ignored (should use .env)
-    console.warn(
-      "Attempted to set API key via IPC in development mode. Ignoring."
-    );
-    return false; // Indicate failure/ignored
   });
 }
