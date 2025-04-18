@@ -1,0 +1,31 @@
+# Node Modules
+node_modules/
+
+# Build Output
+dist/
+build/
+renderer/build/
+renderer/dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+.env
+.env*.local
+.env.*.local
+
+# Electron-Store data
+# Default location is OS-specific, often in AppData/Application Support
+# Add the specific file name if known, e.g., config.json
+# Or, if you configured a specific path, add that path.
+# Since the default path is outside the project, this might not be strictly necessary,
+# but adding common names is good practice.
+*.json # Might be too broad, consider more specific name like config.json if applicable
+*.db # Common suffix for simple databases electron-store might use
+
+# OS generated files
+.DS_Store
+Thumbs.db 
