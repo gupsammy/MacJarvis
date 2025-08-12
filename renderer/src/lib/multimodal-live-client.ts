@@ -213,7 +213,6 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
 
         // strip the audio parts out of the modelTurn
         const otherParts = difference(parts, audioParts);
-        // console.log("otherParts", otherParts);
 
         base64s.forEach((b64) => {
           if (b64) {
