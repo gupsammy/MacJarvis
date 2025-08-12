@@ -4,16 +4,16 @@ This document outlines areas for improvement, optimization, and security hardeni
 
 ## 1. Security Vulnerabilities
 
-### 1.1. API Key Exposure (Critical) [DONE]
+### 1.1. API Key Exposure (Critical) (Completed)
 
 - **Issue:** The `REACT_APP_GEMINI_API_KEY` is accessed directly in the renderer process (`renderer/src/App.tsx`) via `process.env`. Create React App embeds these variables at build time, exposing the key in the bundled client-side code.
 - **Risk:** High. Anyone inspecting the application's source code can steal the API key.
 - **Action:**
-  - Remove API key access from `renderer/src/App.tsx`. [DONE]
-  - Modify the Electron main process (`main.ts`) to load the API key securely (e.g., from an environment variable accessible only to the main process, or a secure configuration file). [DONE]
-  - Implement IPC (Inter-Process Communication) handlers in `main.ts` for any actions requiring the API key (e.g., connecting to the Gemini WebSocket). [DONE]
-  - Modify the renderer code to call these IPC handlers via the preload script (`preload.ts`) instead of using the API key directly. [DONE]
-  - Ensure the `.env` file containing the key is added to `.gitignore` if not already. [DONE]
+  - Remove API key access from `renderer/src/App.tsx`.
+  - Modify the Electron main process (`main.ts`) to load the API key securely (e.g., from an environment variable accessible only to the main process, or a secure configuration file).
+  - Implement IPC (Inter-Process Communication) handlers in `main.ts` for any actions requiring the API key (e.g., connecting to the Gemini WebSocket).
+  - Modify the renderer code to call these IPC handlers via the preload script (`preload.ts`) instead of using the API key directly.
+  - Ensure the `.env` file containing the key is added to `.gitignore` if not already.
 
 ### 1.2. Developer Tools in Production (High)
 
@@ -23,7 +23,7 @@ This document outlines areas for improvement, optimization, and security hardeni
 
 ## 2. Build Process & Performance
 
-### 2.1. Migrate Renderer from CRA to Vite (High Priority)
+### 2.1. Migrate Renderer from CRA to Vite (High Priority) (Completed)
 
 - **Issue:** The renderer process uses Create React App (`react-scripts`), which has slower development startup, HMR, and production build times compared to modern alternatives like Vite.
 - **Benefit:** Significantly faster development experience and potentially faster production builds.
@@ -39,7 +39,7 @@ This document outlines areas for improvement, optimization, and security hardeni
   - Update the root `package.json` build scripts (`build-renderer`, `dev`) to use the new Vite commands and paths.
   - Update `electron-builder` configuration in the root `package.json` (`files` array) to include `renderer/dist/**/*` instead of `renderer/build/**/*`.
 
-## 3. Code Quality & Redundancy
+## 3. Code Quality & Redundancy (Completed)
 
 ### 3.1. Remove Debug Logs
 
@@ -61,7 +61,7 @@ This document outlines areas for improvement, optimization, and security hardeni
 - **Issue:** Files like `reportWebVitals.ts`, `setupTests.ts`, `App.test.tsx` might be unused if web vitals reporting or the default test setup aren't utilized.
 - **Action:** Evaluate if these files are needed. If not, remove them (especially consider this during/after the Vite migration).
 
-## 4. Licensing & Metadata
+## 4. Licensing & Metadata (Completed)
 
 ### 4.1. Add Root License
 
@@ -73,7 +73,7 @@ This document outlines areas for improvement, optimization, and security hardeni
 - **Issue:** `renderer/src/App.tsx` contains a Google LLC Apache 2.0 license header.
 - **Action:** Verify if this header is accurate for the project. If the code was derived from an example, update or remove the header to reflect the project's actual license and copyright holder.
 
-## 5. Electron Configuration & Security
+## 5. Electron Configuration & Security (Completed)
 
 ### 5.1. Review Electron Build Settings
 

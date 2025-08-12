@@ -41,7 +41,12 @@ function AltairComponent() {
 
   useEffect(() => {
     setConfig({
-      model: "models/gemini-2.0-flash-exp",
+      model: "models/gemini-live-2.5-flash-preview",
+      tools: [
+        { googleSearch: {} },
+        { codeExecution: {} },
+        { functionDeclarations: [declaration] }
+      ],
       generationConfig: {
         responseModalities: "audio",
         speechConfig: {
@@ -55,11 +60,6 @@ function AltairComponent() {
           },
         ],
       },
-      tools: [
-        // there is a free-tier quota for search
-        { googleSearch: {} },
-        { functionDeclarations: [declaration] },
-      ],
     });
   }, [setConfig]);
 

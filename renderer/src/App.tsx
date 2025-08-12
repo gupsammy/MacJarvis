@@ -3,20 +3,11 @@ import React, {
   useEffect,
   useRef,
   useCallback,
-  lazy,
-  Suspense,
 } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
-// Import Altair dynamically
-// import { Altair } from "./components/altair/Altair";
-// Adjust lazy import for named export
-const Altair = lazy(() =>
-  import("./components/altair/Altair").then((module) => ({
-    default: module.Altair,
-  }))
-);
+// Altair component removed - not needed for MacJarvis core functionality
 import ControlTray from "./components/control-tray/ControlTray";
 import cn from "classnames";
 
@@ -148,11 +139,7 @@ function App() {
           <SidePanel />
           <main>
             <div className="main-app-area">
-              {/* APP goes here */}
-              {/* Wrap lazy loaded component in Suspense */}
-              <Suspense fallback={<div>Loading chart...</div>}>
-                <Altair />
-              </Suspense>
+              {/* MacJarvis main interaction area */}
               <video
                 className={cn("stream", {
                   hidden: !videoRef.current || !videoStream,
